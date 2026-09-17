@@ -52,13 +52,16 @@ function withCardsFallback(form: FormSummary, cards: { yellowAvg: number; redAvg
   return { ...form, yellowCardsAvg: cards.yellowAvg, redCardsTotal: cards.redAvg };
 }
 
-export async function getTodayFixtures(): Promise<{ fixtures: Fixture[]; source: "live" | "mock" }> {
+export function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+export async function getFixturesForDate(date: string): Promise<{ fixtures: Fixture[]; source: "live" | "mock" }> {
   if (!hasApiFootballKey()) {
     return { fixtures: mockFixturesForToday(), source: "mock" };
   }
-  const today = new Date().toISOString().slice(0, 10);
   try {
-    const fixtures = await getFixturesByDate(today);
+    const fixtures = await getFixturesByDate(date);
     return { fixtures, source: "live" };
   } catch (err) {
     console.error("[data] falling back to mock fixtures:", err);
